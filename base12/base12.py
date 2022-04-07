@@ -1,12 +1,5 @@
-"""Convert a number from any base between 1-36 to any other base
-between base 1-36
-
-Some flaws: 
-	If you try to convert a integer with an exponent that is not
-	defined in its base, you will get a wrong answer.
-
-	E.g. if you try to convert 'A' from base 10 you will get 
-	a wrong answer in return.
+"""
+Convert a number from any base between 1-36 to any other base between base 1-36
 
 """
 
@@ -17,7 +10,9 @@ sign_list = [
 	'U', 'V', 'W', 'X', 'Y', 'Z',
 ]
 
-def base_10_to_base_A(integer=0, base_to=2, exponent_list=[]):
+def base_10_to_base_A(integer=0, base_to=2, exponent_list=None):
+	if not exponent_list:
+		exponent_list = list()
 	next_exponent = integer // base_to
 	if next_exponent > base_to - 1:
 		exponent_list.append(integer % base_to) 
@@ -31,7 +26,9 @@ def base_10_to_base_A(integer=0, base_to=2, exponent_list=[]):
 	return ''.join(return_list)
 
 
-def base_A_to_base_10(int_string='0', base_from=2, exponent_list=[]):	
+def base_A_to_base_10(int_string='0', base_from=2, exponent_list=None):
+	if not exponent_list:
+		exponent_list = list()
 	int_list = list(int_string)
 	reverse_int_list = int_list[::-1]
 	base_10_list = []
