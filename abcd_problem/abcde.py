@@ -1,17 +1,16 @@
 """ORIGINAL PROBLEM:
 
-Let | be the concatenate operator. Now find all
+Let | be the concatenate operator. Now find all relations
 
 A|B|C|D * E = D|C|B|A
 
-susch that A,B,C,D \in {0,1,2,3,4,5,6,7,8,9}.
-
-Replace letters with digits and have the sum be true.
-A, B, C, D and E must all be different digits.
+such that A,B,C,D \in {0,1,2,3,4,5,6,7,8,9}.
 
 GENERALIZED:
 
-K_1|K_2|...|K_n * E = K_n|K_{n-1}|...|K_1
+Find all relations
+K_1|K_2|...|K_n * K_{n+1} = K_n|K_{n-1}|...|K_1
+s.t. K_i \in {0,..,9}
 
 """
 from time import perf_counter
