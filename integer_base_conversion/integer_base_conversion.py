@@ -1,5 +1,5 @@
 """
-Convert a number from any base between 1-36 to any other base between base 1-36
+Convert a number from any base between 2-36 to any other base between base 2-36
 
 """
 
@@ -55,5 +55,5 @@ def base_A_to_base_B(integer='0', base_from=2, base_to=10):
 		return(base_B)
 
 
-print(base_A_to_base_B('A', 11, 2))
+print(base_A_to_base_B(integer=127, base_from=10, base_to=2))
 
