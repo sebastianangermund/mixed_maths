@@ -35,12 +35,24 @@ class Collatz:
 
 
 class CollatzNumbers:
+    cache = []
+
     def __init__(self, multiplier, constant, parent):
+        if self.init_check(multiplier, constant):
+            return None
         self.multiplier = multiplier
         self.constant = constant
         self.parent = parent
         self.child_even = None
         self.child_odd = None
+
+    @classmethod
+    def init_check(cls, a, b):
+        if (a, b) in cls.cache:
+            print(f'CACHE HIT: {(a, b)}')
+            return True
+        cls.cache.append((a, b))
+        return False
 
     def __str__(self):
         return f'{self.multiplier}n + {self.constant}'
@@ -56,29 +68,33 @@ class CollatzNumbers:
             return self.child_even, self.child_odd
         multiplier_even = self.multiplier % 2 == 0
         constant_even = self.constant % 2 == 0
+        child_even_ab = None
+        child_odd_ab = None
+        child_even = None
+        child_odd = None
         if multiplier_even and constant_even:
-            child_ab = self._get_child_ab(a=self.multiplier, b=self.constant, even=True)
-            child_even = CollatzNumbers(child_ab[0], child_ab[1], self)
-            self.child_even = child_even
-            return child_even, None
+            child_even_ab = self._get_child_ab(a=self.multiplier, b=self.constant, even=True)
         elif multiplier_even and (not constant_even):
-            child_ab = self._get_child_ab(a=self.multiplier, b=self.constant, even=False)
-            child_odd = CollatzNumbers(child_ab[0], child_ab[1], self)
-            self.child_odd = child_odd
-            return None, child_odd
+            child_odd_ab = self._get_child_ab(a=self.multiplier, b=self.constant, even=False)
         elif (not multiplier_even) and constant_even:
             child_even_ab = self._get_child_ab(a=2*self.multiplier, b=self.constant, even=True)
             child_odd_ab = self._get_child_ab(a=2*self.multiplier, b=self.constant+self.multiplier, even=False)
-            child_even = CollatzNumbers(child_even_ab[0], child_even_ab[1], self)
-            child_odd = CollatzNumbers(child_odd_ab[0], child_odd_ab[1], self)
-            self.child_even = child_even
-            self.child_odd = child_odd
-            return child_even, child_odd
         elif (not multiplier_even) and (not constant_even):
             child_even_ab = self._get_child_ab(a=2*self.multiplier, b=self.constant+self.multiplier, even=True)
             child_odd_ab = self._get_child_ab(a=2*self.multiplier, b=self.constant, even=False)
-            child_even = CollatzNumbers(child_even_ab[0], child_even_ab[1], self)
-            child_odd = CollatzNumbers(child_odd_ab[0], child_odd_ab[1], self)
-            self.child_even = child_even
-            self.child_odd = child_odd
-            return child_even, child_odd
+
+        if child_even_ab:
+            if child_even_ab in self.cache:
+                print(f'CACHE HIT: {child_even_ab}')
+            else:
+                child_even = CollatzNumbers(child_even_ab[0], child_even_ab[1], self)
+        if child_odd_ab:
+            if child_odd_ab in self.cache:
+                print(f'CACHE HIT: {child_odd_ab}')
+            else:
+                child_odd = CollatzNumbers(child_odd_ab[0], child_odd_ab[1], self)
+        self.child_even = child_even
+        self.child_odd = child_odd
+
+        return child_even, child_odd
+
