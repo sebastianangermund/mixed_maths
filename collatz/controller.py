@@ -2,16 +2,25 @@ from anytree import RenderTree
 from anytree.exporter import UniqueDotExporter
 from collatz import CollatzNumbers
 
-root = CollatzNumbers(1,0,None)
+
+graph_depth = 10
+root = CollatzNumbers(27, 2, None, 'root')
 
 parents = [root]
-for _ in range(12):
+for i in range(graph_depth):
     children = []
     for parent in parents:
-        parent.generate_children()
+        # parent.generate_children()
+        parent.generate_odd_even_children()
         for baby in parent.children:
             children.append(baby)
-    # print(' '.join([el.__str__() for el in children]))
+    if not children:
+        print('HUH')
+        break
+    # for child in children:
+    #     print(child.name)
+    #     if not (child.constant % 2 == 0):
+    #         print('counter example found!')
     parents = children
 
 

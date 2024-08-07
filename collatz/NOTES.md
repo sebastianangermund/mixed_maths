@@ -1,0 +1,1 @@
+it seems like the even-odd branc, i.e. the right most branch, starting at (1,0) is the only branch that preserves the even-odd pattern indefinitely
