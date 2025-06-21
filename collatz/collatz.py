@@ -14,6 +14,13 @@ class Collatz:
         else:
             return 3*n + 1
 
+    @staticmethod
+    def collatz_step_compact(n):
+        if n % 2 == 0:
+            return n // 2
+        else:
+            return (3*n + 1) // 2
+
     def run_collatz(self, n):
         return_value = self.collatz_step(n)
         if return_value in self.cache.keys():
@@ -69,7 +76,7 @@ class CollatzNumbers(NodeMixin):
         return False
 
     def __str__(self):
-        return f'{self.multiplier}x+{self.constant} {self.parent_handed}\ni:{self.root_transform}'
+        return f'S({self.multiplier},{self.constant}) {self.parent_handed}\ni={self.root_transform[0]}j + {self.root_transform[1]}'
 
     def _get_child_ab(self, a, b, even):
         if even:
