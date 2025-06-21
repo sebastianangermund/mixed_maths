@@ -1,5 +1,10 @@
-
+"""
+This script calculates the fraction representation of a repeating decimal number.
+It takes a decimal number as input, identifies the repeating part,
+and computes the fraction in its simplest form.
+"""
 from math import gcd
+
 
 def find_pattern(tail, index, value):
     if index >= len(tail):
@@ -9,22 +14,29 @@ def find_pattern(tail, index, value):
         return False, None
     return find_pattern(tail[index:], index, value)
 
+
 def unpack(input):
-    split = input.split('.')[:2]
-    tail = split[1]
-    if ('.' not in input) or not tail:
+    if ('.' not in input):
         print('not a decimal number')
         return None, None
     elif not input.endswith('..'):
+        print('none repeating decimal detected')
         return input, '0'
-
+    split = input.split('.')[:2]
+    tail = split[1]
+    if not tail:
+        print('not a decimal number')
+        return None, None
+    print('repeating decimal indicated by user')
     return_list = []
     for index in range(1, len(tail)//2 + 1):
         value, return_index = find_pattern(tail, index, False)
         if value:
             print(f'Found pattern: {tail[:return_index]}\n')
             return input, tail[:return_index]
+    print('no repeating decimal pattern detected')
     return input, '0'
+
 
 def calculate(input):
     input, pattern = unpack(input)
@@ -48,5 +60,5 @@ def calculate(input):
 
 
 if __name__ == '__main__':
-    input = '4.87578764869734768548757876486973476854..'
+    input = '3.334..'
     calculate(input)
