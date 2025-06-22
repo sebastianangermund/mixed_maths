@@ -27,7 +27,7 @@ def run(graph_depth, root):
 
 if __name__ == "__main__":
     start = time.time()
-    graph_depth = 5    # Do not use big values (> 6) when generating visualizations for the entire Collatz tree
+    graph_depth = 6    # Do not use big values (> 6) when generating visualizations for the entire Collatz tree
     root_sequence = (1, 0)
     root_parent = None
     root = CollatzNumbers(root_parent, root_sequence[0], root_sequence[1], 'ROOT')
@@ -35,5 +35,5 @@ if __name__ == "__main__":
     run_time = time.time() - start
     print(f"Collatz tree generation took {run_time:.2f} seconds.")
     # print_to_terminal(tree)
-    # save_fig_path = "collatz_tree.pdf"
-    # UniqueDotExporter(root).to_picture(save_fig_path)
+    save_fig_path = "collatz_tree.pdf"
+    UniqueDotExporter(root).to_picture(save_fig_path)

@@ -15,10 +15,10 @@ class Collatz:
     @staticmethod
     def collatz_step_compact(n):
         if n % 2 == 0:
-            print('Even step:', n // 2)
+            # print('Even step:', n // 2)
             return n // 2
         else:
-            print('Odd step:', (3*n + 1) // 2)
+            # print('Odd step:', (3*n + 1) // 2)
             return (3*n + 1) // 2
 
     def run_collatz(self, n):
@@ -47,7 +47,7 @@ class Collatz:
 if __name__ == "__main__":
     c = Collatz()
 
-    n = 255
+    n = 661
     while True:
         print(n)
         n = c.collatz_step_compact(n)

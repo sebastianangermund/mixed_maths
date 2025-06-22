@@ -31,7 +31,7 @@ class CollatzNumbers(NodeMixin):
 
     def __init__(self, parent, multiplier, constant, parent_parity, index_map=(1,0), word=''):
         super(CollatzNumbers, self).__init__()
-        self.parent = parent
+        self.parent = parent    # for depth tracking done by anytree
         self.multiplier = multiplier
         self.constant = constant
         self.parent_parity = parent_parity
@@ -54,7 +54,7 @@ class CollatzNumbers(NodeMixin):
                 return (a, b)   # immediate duplicate
             # >>> END DEBUG
 
-            # ai + b => 3(ai + b) + 1 = (3a)i + (3b + 1)
+            # ai + b -> 3(ai + b) + 1 = (3a)i + (3b + 1)
             new_a = 3*a
             new_b = 3*b + 1
             # return (new_a, new_b)
@@ -64,11 +64,17 @@ class CollatzNumbers(NodeMixin):
             return self._get_child_ab(a=new_a, b=new_b, even=True)
 
     def _register_and_check(self):
+        """Attempth to find a cycle in the Collatz tree.
+
+        alpha, beta here represent the index map coefficients.
+
+        NOTE: This method is flawed. Working on a real cycle detection algorithm
+        """
         key = (self.multiplier, self.constant)
         if key not in FIRST:
             FIRST[key] = (self.depth, *self.index_map, self)
             return  True
-        # second hit ➜ potential cycle
+        # second hit -> potential cycle
         k  = self.depth
         k0, alpha0, beta0, node0 = FIRST[key]
         alpha1, beta1 = self.index_map
@@ -112,32 +118,34 @@ class CollatzNumbers(NodeMixin):
 
         if transform:
             child_even_ab = self._get_child_ab(a=self.index_transforms[child_even_index_transform][0]*self.multiplier,
-                                            b=self.constant + self.index_transforms[child_even_index_transform][1]*self.multiplier,
-                                            even=True)
+                                               b=self.constant + self.index_transforms[child_even_index_transform][1]*self.multiplier,
+                                               even=True)
             child_odd_ab  = self._get_child_ab(a=self.index_transforms[child_odd_index_transform][0]*self.multiplier,
-                                            b=self.constant + self.index_transforms[child_odd_index_transform][1]*self.multiplier,
-                                            even=False)
+                                               b=self.constant + self.index_transforms[child_odd_index_transform][1]*self.multiplier,
+                                               even=False)
 
         self._get_babies(child_even_ab, child_even_index_transform, child_odd_ab, child_odd_index_transform, transform)
 
     def _get_babies(self, child_even_ab, child_even_index_transform, child_odd_ab, child_odd_index_transform, transform):
         babies = []
         if child_even_ab:
-            if child_even_index_transform:
+            if transform:
                 index_map = (self.index_map[0]*self.index_transforms[child_even_index_transform][0],
                              self.index_map[0]*self.index_transforms[child_even_index_transform][1] + self.index_map[1])
+                child_word = self.word + child_even_index_transform
             else:
                 index_map = self.index_map  # use parents map (no transformation)
-            child_word = self.word + child_even_index_transform if transform else self.word
+                child_word = self.word
             child_even = CollatzNumbers(self, child_even_ab[0], child_even_ab[1], self.parent_parity_mapping['EVEN'], index_map, child_word)
             babies.append(child_even)
         if child_odd_ab:
             if child_odd_index_transform:
                 index_map = (self.index_map[0]*self.index_transforms[child_odd_index_transform][0],
                              self.index_map[0]*self.index_transforms[child_odd_index_transform][1] + self.index_map[1])
+                child_word = self.word + child_odd_index_transform
             else:
                 index_map = self.index_map  # use parents map (no transformation)
-            child_word = self.word + child_odd_index_transform if transform else self.word
+                clild_word = self.word
             child_odd = CollatzNumbers(self, child_odd_ab[0], child_odd_ab[1], self.parent_parity_mapping['ODD'], index_map, child_word)
             babies.append(child_odd)
         self.children = babies
