@@ -1,3 +1,4 @@
+import time
 from anytree import RenderTree
 from anytree.exporter import UniqueDotExporter
 from collatz import CollatzNumbers
@@ -9,23 +10,7 @@ def print_to_terminal(root):
         print(treestr.ljust(8))
 
 
-def run_collatz_odd_even(graph_depth, root):
-    """Run the specific odd-even Collatz generation."""
-    parents = [root]
-    for i in range(graph_depth):
-        children = []
-        for parent in parents:
-            parent.generate_odd_even_children()
-            for baby in parent.children:
-                children.append(baby)
-        if not children:
-            print('HUH')
-            break
-        parents = children
-    return root
-
-
-def run_collatz_general(graph_depth, root):
+def run(graph_depth, root):
     """Run the entire Collatz generation."""
     parents = [root]
     for i in range(graph_depth):
@@ -41,11 +26,14 @@ def run_collatz_general(graph_depth, root):
 
 
 if __name__ == "__main__":
-    graph_depth = 25    # Do not use big values (> 6) when generating visualizations for the entire Collatz tree
+    start = time.time()
+    graph_depth = 5    # Do not use big values (> 6) when generating visualizations for the entire Collatz tree
     root_sequence = (1, 0)
     root_parent = None
-    root = CollatzNumbers(root_sequence[0], root_sequence[1], root_parent, 'ROOT')
-    tree = run_collatz_general(graph_depth, root)
+    root = CollatzNumbers(root_parent, root_sequence[0], root_sequence[1], 'ROOT')
+    tree = run(graph_depth, root)
+    run_time = time.time() - start
+    print(f"Collatz tree generation took {run_time:.2f} seconds.")
     # print_to_terminal(tree)
     # save_fig_path = "collatz_tree.pdf"
     # UniqueDotExporter(root).to_picture(save_fig_path)
