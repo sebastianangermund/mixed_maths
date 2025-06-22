@@ -41,6 +41,7 @@ class CollatzNumbers(NodeMixin):
         self._register_and_check()
 
     def __str__(self):
+        # self string used in anytree rendering
         return f'S({self.multiplier},{self.constant}) {self.parent_parity}\ni={self.index_map[0]}j + {self.index_map[1]}\n{self.word}'
 
     def _get_child_ab(self, a, b, even):
