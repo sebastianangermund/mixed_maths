@@ -119,16 +119,16 @@ $\forall s_i \in S(a,b)$ it is the case that, when
 These are all easy to verify.
 
 \section{Index transformations}
-It's interesting for us to consider two specific transformations of $i$, let's define them as $T_1: i \longrightarrow 2j$ and $T_2: i \longrightarrow 2j+1$. Now $T_1: (ai+b)_{i\in\mathbb{N}} \longrightarrow (2aj+b)_{j\in\mathbb{N}}$ and $T_2: (ai+b)_{i\in\mathbb{N}} \longrightarrow (2aj+a+b)_{j\in\mathbb{N}}$. Or
+It's interesting for us to consider two specific transformations of $i$, let's define them as $T_1: i \longmapsto 2j$ and $T_2: i \longmapsto 2j+1$. Now $T_1: (ai+b)_{i\in\mathbb{N}} \longmapsto (2aj+b)_{j\in\mathbb{N}}$ and $T_2: (ai+b)_{i\in\mathbb{N}} \longmapsto (2aj+a+b)_{j\in\mathbb{N}}$. Or
 \begin{equation*}
 \begin{split}
-    & T_1: S(a,b) \longrightarrow S(2a,b), \\
-    & T_2: S(a,b) \longrightarrow S(2a,b+a).
+    & T_1: S(a,b) \longmapsto S(2a,b), \\
+    & T_2: S(a,b) \longmapsto S(2a,b+a).
 \end{split}
 \end{equation*}
 
 \begin{example}\label{example:ex1}
-Let's look at $S(3,2)$. Apply $T_2: S(3,2)\longrightarrow S(6,5)$ and choose for example $s_{10}\in S(6,5) = 65$. Now, since $T_2: i \longrightarrow 2j + 1$ and we chose $j=10$ then $i=21$ will give us the same sequence value from the original sequence: $s_{21}\in S(3,2) = 65$.
+Let's look at $S(3,2)$. Apply $T_2: S(3,2)\longmapsto S(6,5)$ and choose for example $s_{10}\in S(6,5) = 65$. Now, since $T_2: i \longmapsto 2j + 1$ and we chose $j=10$ then $i=21$ will give us the same sequence value from the original sequence: $s_{21}\in S(3,2) = 65$.
 \end{example}
 %
 \noindent
@@ -142,15 +142,15 @@ Parity splittig
     \item When $a,b$ odd then
     \begin{equation*}
     \begin{split}
-        & T_1: S(a,b) \longrightarrow (s_i \in S(a,b): 2 \nmid s_i)_{i\in N}, \\
-        & T_2: S(a,b) \longrightarrow (s_i \in S(a,b): 2 \mid s_i)_{i\in N}.
+        & T_1: S(a,b) \longmapsto (s_i \in S(a,b): 2 \nmid s_i)_{i\in N}, \\
+        & T_2: S(a,b) \longmapsto (s_i \in S(a,b): 2 \mid s_i)_{i\in N}.
     \end{split}
     \end{equation*}
     \item When $a$ odd and $b$ even then
     \begin{equation*}
     \begin{split}
-        & T_1: S(a,b) \longrightarrow (s_i \in S(a,b): 2 \mid s_i)_{i\in N} \\
-        & T_2: S(a,b) = (s_i \in S(a,b): 2 \nmid s_i)_{i\in N}.
+        & T_1: S(a,b) \longmapsto (s_i \in S(a,b): 2 \mid s_i)_{i\in N} \\
+        & T_2: S(a,b) \longmapsto (s_i \in S(a,b): 2 \nmid s_i)_{i\in N}.
     \end{split}
     \end{equation*}
 \end{enumerate}
@@ -198,14 +198,14 @@ Let's start a Collatz sequence without making any assumptions on the seed $n_0$,
     Even sub-sequence
     \begin{itemize}
         \item
-        \textbf{Sub sequence extraction}: $T_1: S(1,0) \longrightarrow S(2,0)$
+        \textbf{Sub sequence extraction}: $T_1: S(1,0) \longmapsto S(2,0)$
         \item \textbf{Collatz step:} $S(2,0) \longrightarrow S(1,0)$ - \textit{The child loops back to the parent}
     \end{itemize}
     \item
     Odd sub-sequence
     \begin{itemize}
         \item
-        \textbf{Sub sequence extraction}: $T_2: S(1,0) \longrightarrow S(2,1)$
+        \textbf{Sub sequence extraction}: $T_2: S(1,0) \longmapsto S(2,1)$
         \item \textbf{Collatz step:} $S(2,1) \longrightarrow S(6,4) \longrightarrow S(3,2)$
     \end{itemize}
 \end{enumerate}
@@ -223,7 +223,7 @@ In the Collatz steps we have simply plugged in $n_i=ai+b$ into Equation~\ref{eq:
 \subsection*{Tracing the seed}
 A sequence of transformations $T_{k\in K}$, where $K$ is a sequence of 1´s and 2´s, has the following property:
 \begin{equation*}
-    T_{k\in K}: i \longrightarrow 2^{|K|}j+x
+    T_{k\in K}: i \longmapsto 2^{|K|}j+x
 \end{equation*}
 where $x\geq0$ is some sum of powers of 2. More generally:
 \begin{proposition}[General index formula]\label{proposition:prop2}
@@ -257,7 +257,7 @@ i = 2^{k} j
 $\Box$
 \end{flushright}
 %
-So when only $T_1$ transformations are applied then $T_{k\in K}:i\longrightarrow 2^{|K|}j, \ K=(1,1,1,...,1)$. When only $T_2$ transformations are applied we will get the final transformation $T_{k\in K}:i\longrightarrow 2^{|K|}j+2^{|K|}-1, \ K=(2,2,2,...,2)$. This follows from the fact that $2^{k-1}+...+2^0=2^k-1$.
+So when only $T_1$ transformations are applied then $T_{k\in K}:i\longmapsto 2^{|K|}j, \ K=(1,1,1,...,1)$. When only $T_2$ transformations are applied we will get the final transformation $T_{k\in K}:i\longmapsto 2^{|K|}j+2^{|K|}-1, \ K=(2,2,2,...,2)$. This follows from the fact that $2^{k-1}+...+2^0=2^k-1$.
 %
 \\[.4cm]
 %
@@ -309,7 +309,7 @@ Example~\ref{example:ex2} showcases that, since the value of $j$ was arbitrary, 
 A not so far fetched guess would be that there is a seed $n_0$ such that the odd step of the compact Collatz function would be infinitely repeated: successions of multiplying by 3, adding 1 and dividing by 2 will clearly diverge to infinity as long as $n_0\geq0$. We will now attempt to show that there is no such seed.
 %
 \begin{theorem}\label{theorem:thm1}
-There is no bounded seed $n_0$ such that Equation~\ref{eq:eq1} will repeat the odd step indefinitely.
+There is no finite seed $n_0$ such that Equation~\ref{eq:eq1} will repeat the odd step indefinitely.
 %
 \\[.2cm]
 %
@@ -332,7 +332,7 @@ We want to show that for $n_k = ai+b$, where $a$ odd and $b=a-1$, after a $T_2$ 
 %
 \\[.2cm]
 %
-\textbf{Induction case:} $n_k = s_i \in S(a,b)$. Assume $a$ odd and $b=a-1$. Odd sub-sequence extraction: $T_2: S(a,b) \longrightarrow S(2a, b+a)$, and Collatz step on $s_i \in S(2a,b+a)$:
+\textbf{Induction case:} $n_k = s_i \in S(a,b)$. Assume $a$ odd and $b=a-1$. Odd sub-sequence extraction: $T_2: S(a,b) \longmapsto S(2a, b+a)$, and Collatz step on $s_i \in S(2a,b+a)$:
 \begin{equation*}
     n_{k+1} = \frac{3(2ai+b+a)+1}{2} = \frac{6ai+3b+3a+1}{2} = 3ai + \frac{3(a+b)+1}{2}
 \end{equation*}
@@ -348,7 +348,7 @@ Now $a'=6\lambda+3$ and $b'=6\lambda+2$, which gives the resulting sequence $S(a
 \begin{flushright}
 $\Box$
 \end{flushright}
-Now, importantly, we know that we are always doing $T_2$ index transformations before each Collatz step. So after $k$ successive steps we will land at a node with sequence index $j$, and by~\ref{proposition:prop2} we can retrieve the seed as $s_i\in S(1,0) = i = 2^kj + 2^k -1$. Even if we choose $j=0$, the starting seed will clearly be unbounded when we let $k\longrightarrow\infty$. Thus there is no bounded seed $n_0$ such that the compact odd Collatz-step can be applied indefinitely.
+Now, importantly, we know that we are always doing $T_2$ index transformations before each Collatz step. So after $k$ successive steps we will land at a node with sequence index $j$, and by~\ref{proposition:prop2} we can retrieve the seed as $s_i\in S(1,0) = i = 2^kj + 2^k -1$. Even if we choose $j=0$, the starting seed will clearly be unbounded when we let $k\longrightarrow\infty$. Thus there is no finite seed $n_0$ such that the compact odd Collatz-step can be applied indefinitely.
 \begin{flushright}
 $\Box$
 \end{flushright}
