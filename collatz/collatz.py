@@ -1,6 +1,51 @@
-from math import gcd
+import numpy as np
 
 from anytree import NodeMixin
+
+
+
+def check_loop_case_1(b_1, beta_1, ancestor):
+    b_2 = ancestor.constant
+    beta_2 = ancestor.index_map[1]
+    if b_1 == b_2 and beta_1 == beta_2:
+        if b_1 == 1 or b_1 == 2:    # node value 1 or 2 is a collatz end cycle
+            # print("End cycle detected at ", str(ancestor).replace("\n", " "))
+            return False    # we don't care about end cycles
+        print("!! Cycle detected at ", str(ancestor).replace("\n", " "))
+        return True
+    return False
+
+
+def check_loop_case_2(a_1, b_1, alpha_1, beta_1, ancestor):
+    if ancestor.parent is None:
+        return False
+ 
+    a_2 = ancestor.multiplier
+    alpha_2 = ancestor.index_map[0]
+
+    denominator = a_1 * alpha_2 - a_2 * alpha_1
+    if denominator == 0:
+        print("## Zero denominator found")
+        return False
+
+    b_2 = ancestor.constant
+    beta_2 = ancestor.index_map[1]
+
+    x_numerator = a_2 * (beta_1 - beta_2) + alpha_2 * (b_2 - b_1)
+    if x_numerator == 0:
+        return check_loop_case_1(b_1, beta_1, ancestor)
+    if x_numerator % denominator != 0:
+        return False
+
+    y_numerator = a_1 * (beta_1 - beta_2) + alpha_1 * (b_2 - b_1)
+    if y_numerator % denominator != 0:
+        return False
+
+    if np.sign(denominator) == np.sign(x_numerator) and np.sign(denominator) == np.sign(y_numerator):
+        # x and y are integers > 0, so we have a cycle
+        return True
+
+    return False
 
 
 class CollatzNumbers(NodeMixin):
@@ -48,17 +93,23 @@ class CollatzNumbers(NodeMixin):
         Search in ancestors for a node S(a_2,b_2) with index map alpha_2, beta_2 and depth d_2
         such that:
 
-        Case 1: b_1 = b_2 := b and beta_1 = beta_2 := beta
-            - (we can then set node index = 0 which results in same node value b and same seed value beta -> cycle)
+        Case 1 (special case of Case 2):
+        b_1 = b_2 := b and beta_1 = beta_2 := beta
+        - Why is this a cycle?
+            We can then set node index = 0 which results in same node value b and same seed value beta -> cycle
 
-        Case 2: ...
+        Case 2 (general case):
+        There exists x,y such that a_1*x + b_1 = a_2*y + b_2 and alpha_1*x + beta_1 = alpha_2*y + beta_2
+        Solve for x and y:
+            x = a_2(beta_1 - beta_2) + alfa_2(b_2 - b_1) / a_1*alpha_2 - a_2*alpha_1
+            y = a_1(beta_1 - beta_2) + alpha_1(b_2 - b_1) / a_1*alpha_2 - a_2*alpha_1
+        If x and y are integers, then we have a cycle.
+        - Why is this a cycle?
+            This means that the same node value in two related nodes are reached from the same seed
+
         """
         a_1 = self.multiplier
         b_1 = self.constant
-        alpha_1 = self.index_map[0]
-        beta_1 = self.index_map[1]
-
-        cycle_detected, terminate_branch = False, False
 
         if a_1 == 1 and b_1 == 0:
             # root node, trivial cycle
@@ -66,16 +117,17 @@ class CollatzNumbers(NodeMixin):
             terminate_branch = True
             return cycle_detected, terminate_branch
 
-        # check case 1
+        alpha_1 = self.index_map[0]
+        beta_1 = self.index_map[1]
+
+        terminate_branch = False
+
         for ancestor in self.ancestors:
-            b_2 = ancestor.constant
-            beta_2 = ancestor.index_map[1]
-            if b_1 == b_2 and beta_1 == beta_2:
-                cycle_detected = True
-                if b_1 == 1 or b_1 == 2:    # node value 1 or 2 is a collatz end cycle
-                    # print("End cycle detected: ", str(ancestor).replace("\n", " "), " -> ", str(self).replace("\n", " "))
-                    # terminate_branch = True
-                    return cycle_detected, terminate_branch
+            # Run special case
+            # cycle_detected = check_loop_case_1(a_1, b_1, self)
+            # Run general case
+            cycle_detected = check_loop_case_2(a_1, b_1, alpha_1, beta_1, ancestor)
+            if cycle_detected:
                 print("!! Cycle detected: ", str(ancestor).replace("\n", " "), " -> ", str(self).replace("\n", " "))
                 return cycle_detected, terminate_branch
 

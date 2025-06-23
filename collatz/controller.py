@@ -35,5 +35,5 @@ if __name__ == "__main__":
     run_time = time.time() - start
     print(f"Collatz tree generation took {run_time:.2f} seconds.")
     # print_to_terminal(tree)
-    save_fig_path = "collatz_tree.pdf"
-    UniqueDotExporter(root).to_picture(save_fig_path)
+    # save_fig_path = "collatz_tree.pdf"
+    # UniqueDotExporter(root).to_picture(save_fig_path)
