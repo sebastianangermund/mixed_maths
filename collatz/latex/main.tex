@@ -1,15 +1,13 @@
 \documentclass{article}
 \usepackage{float}
-\usepackage{graphicx} % Required for inserting images
+\usepackage{graphicx}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{mathtools, bm}
 \usepackage{amsthm}
 \usepackage{url}
 
-% Choose a body style first (upright, say)
 \theoremstyle{definition}
 
-% ONE counter per type, all reset at each \section
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}{Lemma}[section]
 \newtheorem{proposition}{Proposition}[section]
@@ -30,9 +28,9 @@ A recast of the standard residue-class analysis of the \(3x+1\) (Collatz) map in
 terms of two elementary operators on arithmetic progressions.  The resulting
 calculus \emph{(i)} splits \emph{any} progression into its even and odd
 subsequences in a single step; \emph{(ii)} gives a closed formula for every set
-of seeds that realises a prescribed parity word; and \emph{(iii)} yields a
+of seeds that realises a prescribed parity word; \emph{(iii)} yields a
 one–line affine invariant that forbids trajectories consisting of infinitely
-many “odd“ moves.
+many “odd“ moves; and \emph{(iv)} reduces the non-trivial-cycle problem to a pair of linear congruences.
 \end{abstract}
 
 \section*{Related Work}\label{sec:related}
@@ -273,30 +271,16 @@ density $2^{-k}$ inside $\mathbb N$.
 
 
 \subsection*{Illustrations}
-Running the first few steps on a computer we can produce some visualizations. For the first illustration of this "possibility graph" we have included the even steps that are truncated in Equation~\ref{eq:eq1}.
+Running the first few steps on a computer we can produce some visualizations. Here is the first few levels of the tree structure that forms when running the compact Collatz function:
 \begin{figure}[H]
 \begin{center} 
-\includegraphics[width=1.0\textwidth]{tree.png}
-\caption{Visualizing the non-compact Collatz steps for any seed.}
-\label{fig:fig1}
-\end{center}
-\end{figure}
-%
-\noindent
-The visualization software has some limitations so the loops can not be visualized. But there is one trivial for an even seed, obviously $n_0=2^k\cdot m$ will loop k times. The next loop comes in level 4 where the even subsequence of $S(3,2) \longrightarrow S(3,1) \ \big(\longrightarrow S(6,4)\big) \longrightarrow S(3,2)$.
-%
-\\[.4cm]
-%
-Here is the tree structure that forms when running the compact Collatz function:
-\begin{figure}[H]
-\begin{center} 
-\includegraphics[width=1.0\textwidth]{tree.pdf}
-\caption{A visualization of the compact Collatz steps for any seed. Each node shows S(a,b); prefix ‘even/odd parent’ records whether the incoming Collatz step used the even or odd branch, and ‘i = …’ shows the accumulated index map.}
+\includegraphics[width=1.0\textwidth]{tree_illustration.pdf}
+\caption{A visualization of the compact Collatz steps for any seed. Each node shows the arithmetic sequence S(a,b); prefix ‘even/odd parent’ records whether the incoming Collatz step used the even or odd branch. ‘i = …’ shows the accumulated index map and below the word in $\{T_1,T_2\}$ to reach the node.}
 \label{fig:fig2}
 \end{center}
 \end{figure}
 %
-Link to the python code used to generate the graphs: \url{https://github.com/sebastianangermund/mixed_maths/tree/master/collatz}
+Link to the python code used to generate the tree object and visualizations is referenced \cite{Angermund2025}
 %
 \begin{example}\label{example:ex2}
 Let's look at Figure~\ref{fig:fig2} and trace the lineage of $i=n_0$ down to the lower left most node $S(9,5)$. Remember that we have only done a sub-sequence extraction when both $a,b$ are odd or $a$ odd and $b$ even in accordance to Proposition~\ref{proposition:prop1}:
@@ -354,6 +338,38 @@ $\Box$
 \end{flushright}
 \end{theorem}
 
+\section{Cycles}\label{sec:cycles}
+We can use the parity splitting together with the index tracing to search for cycles.
+
+\begin{proposition}[Cycle conditions]\label{proposition:prop3}
+Let $n_k$ be a node at depth $k$ with arithmetic sequence $a_1 j + b_1$ and index map $\alpha_1 j + \beta_1$. Let $n_{k-t}$ be a node at depth $k-t$ with arithmetic sequence $a_2 j + b_2$ and index map $\alpha_2 j + \beta_2$.  For there to be a cycle between $n_k$ and its ancestor $n_{k-t}$ there must exist $x,y\in\mathbb{N}$ such that
+\begin{equation*}
+    \begin{split}
+        a_1 x + b_1 & = a_2 y + b_2, \\
+        \alpha_1 x + \beta_1 & = \alpha_2 y + \beta_2.
+    \end{split}
+\end{equation*}
+This ensures that the nodes take on equal value when spawned from the same seed.
+\end{proposition}
+%
+If we solve the linear system for $x$ and $y$ we get an explicit formula for cycle conditions:
+\begin{equation*}
+    \begin{split}
+        x & = \frac{a_2\big(\beta_1 - \beta_2\big) + \alpha_2\big(b_2 - b_1\big)}{a_1\alpha_2 - a_2\alpha_1}, \\
+        y & = \frac{a_1\big(\beta_1 - \beta_2\big) + \alpha_1\big(b_2 - b_1\big)}{a_1\alpha_2 - a_2\alpha_1}.
+    \end{split}
+\end{equation*}
+Notice that if $b_1=b_2$ and $\beta_1=\beta_2$ we get $x=y=0$. We can actually see this cycle in the first few levels of the tree graph.
+\begin{figure}[H]
+\begin{center} 
+\includegraphics[width=1.0\textwidth]{loop_illustration.pdf}
+\caption{If we let $j=0$ on the $S(3,2)$ node in level 1 you get node value 2 and seed 1. The same for the $S(9,2)$ node in level 3. These are examples of the 1-2-1-2.. cycle of the compact Collatz function. Note that these nodes satisfy the $b_1=b_2,\beta_1=\beta_2$ condition.}
+\label{fig:fig3}
+\end{center}
+\end{figure}
+%
+Rudimentary code to find cycles is referenced \cite{Angermund2025}. Whether this framework can be useful in contrast to methods such as the m-cycle matrix technique\cite{SimonsDeWeger2005} is unclear to us at this stage.
+
 \section{Conclusion and Outlook}\label{sec:conclusion}
 
 We have shown that the Collatz dynamics admit a compact
@@ -371,9 +387,7 @@ parity word (Proposition~\ref{proposition:prop2}); and \emph{(iii)} exposes the
 affine invariant \(b=a-1\) that rules out trajectories consisting of
 infinitely many odd moves (Theorem~\ref{theorem:thm1}).
 
-\medskip
-\noindent
-\textbf{Immediate corollaries.}
+\subsection{Immediate corollaries.}
 \begin{itemize}
   \item Every Collatz orbit must include at least one division by \(2\); the
         invariant argument replaces the classical growth-rate estimate
@@ -385,10 +399,10 @@ infinitely many odd moves (Theorem~\ref{theorem:thm1}).
 
 \medskip
 \noindent
-\textbf{Directions for further work.}
+\subsection{Directions for further work.}
 \begin{enumerate}
-  \item \emph{Loop classification.}  
-        We noted the first non trivial loop in section 6, reffering to Figure~\ref{fig:fig1}; a systematic search within the
+  \item \emph{Cycle classification.}  
+        We started analysing cycles in section \ref{sec:cycles}; a systematic search within the
         \(\{T_{1},T_{2}\}\) calculus could sharpen existing cycle-length
         bounds.
   \item \emph{Density estimates.}  

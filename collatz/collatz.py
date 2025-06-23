@@ -1,5 +1,4 @@
 import numpy as np
-
 from anytree import NodeMixin
 
 
@@ -41,6 +40,8 @@ def check_loop_case_2(a_1, b_1, alpha_1, beta_1, ancestor):
     if y_numerator % denominator != 0:
         return False
 
+    # print(f"x = {x_numerator}/{denominator}, y = {y_numerator}/{denominator}")
+
     if np.sign(denominator) == np.sign(x_numerator) and np.sign(denominator) == np.sign(y_numerator):
         # x and y are integers > 0, so we have a cycle
         return True
@@ -66,7 +67,7 @@ class CollatzNumbers(NodeMixin):
         self.parent_parity = parent_parity
         self.index_map = index_map
         self.word = word
-        self.cycle_detected, self.terminate_branch = self._register_and_check_cycle()
+        self.cycle_detected, self.terminate_branch = self._check_cycle()
         self.name = self.__str__()
 
     def __str__(self):
@@ -86,7 +87,7 @@ class CollatzNumbers(NodeMixin):
             # so we might as well do the next step at once
             return self._get_child_ab(a=new_a, b=new_b, even=True)
 
-    def _register_and_check_cycle(self):
+    def _check_cycle(self):
         """ Attempth to find a cycle in the Collatz tree.
 
         Let current node be S(a_1,b_1) with index map alpha_1, beta_1 and depth d_1.
@@ -111,6 +112,8 @@ class CollatzNumbers(NodeMixin):
         a_1 = self.multiplier
         b_1 = self.constant
 
+        terminate_branch = False
+
         if a_1 == 1 and b_1 == 0:
             # root node, trivial cycle
             cycle_detected = True
@@ -120,7 +123,6 @@ class CollatzNumbers(NodeMixin):
         alpha_1 = self.index_map[0]
         beta_1 = self.index_map[1]
 
-        terminate_branch = False
 
         for ancestor in self.ancestors:
             # Run special case
@@ -129,6 +131,7 @@ class CollatzNumbers(NodeMixin):
             cycle_detected = check_loop_case_2(a_1, b_1, alpha_1, beta_1, ancestor)
             if cycle_detected:
                 print("!! Cycle detected: ", str(ancestor).replace("\n", " "), " -> ", str(self).replace("\n", " "))
+                terminate_branch = True
                 return cycle_detected, terminate_branch
 
         return cycle_detected, terminate_branch
