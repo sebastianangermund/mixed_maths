@@ -118,10 +118,10 @@ class CollatzNumbers(NodeMixin):
                                                b=self.constant + self.index_transforms[child_odd_index_transform][1]*self.multiplier,
                                                even=False)
 
-        self._get_babies(child_even_ab, child_even_index_transform, child_odd_ab, child_odd_index_transform, transform)
+        self._set_children(child_even_ab, child_even_index_transform, child_odd_ab, child_odd_index_transform, transform)
 
-    def _get_babies(self, child_even_ab, child_even_index_transform, child_odd_ab, child_odd_index_transform, transform):
-        babies = []
+    def _set_children(self, child_even_ab, child_even_index_transform, child_odd_ab, child_odd_index_transform, transform):
+        children = []
         if child_even_ab:
             if transform:
                 index_map = (self.index_map[0]*self.index_transforms[child_even_index_transform][0],
@@ -134,7 +134,7 @@ class CollatzNumbers(NodeMixin):
             child_even = CollatzNumbers(self, child_even_ab[0], child_even_ab[1], self.parent_parity_mapping['EVEN'], index_map, child_word)
 
             if not child_even.terminate_branch:
-                babies.append(child_even)
+                children.append(child_even)
 
         if child_odd_ab:
             if child_odd_index_transform:
@@ -148,6 +148,6 @@ class CollatzNumbers(NodeMixin):
             child_odd = CollatzNumbers(self, child_odd_ab[0], child_odd_ab[1], self.parent_parity_mapping['ODD'], index_map, child_word)
 
             if not child_odd.terminate_branch:
-                babies.append(child_odd)
+                children.append(child_odd)
 
-        self.children = babies
+        self.children = children
