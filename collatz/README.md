@@ -5,3 +5,14 @@ Use ```controller.py``` as a playground to test different scenarios, visualize t
 
 # Requirements
 Python requirements are listed in ```requirements.txt``` but you also need to install graphviz. On a mac: ```brew install graphviz```.
+
+# TODO
+### Parallel node generation
+Can we run
+```python
+        ...
+        for parent in parents:
+            parent.generate_children()
+        ...
+```
+in parallel? The ancestor loop in the loop detection would then run in parallel which would speed things up.

@@ -3,22 +3,6 @@ from math import gcd
 from anytree import NodeMixin
 
 
-# --- DEBUG switch: make S(6,1) loop back to itself after one step ---
-DEBUG_SELF_LOOP = False
-SELF_A, SELF_B = 6, 1           # arbitrary odd a, even b works well
-# --- DEBUG switch end ---
-FIRST = {}      # (a,b) ➜ (depth, alpha, beta, node)
-SEEN = set()    # (a,b,depth)
-
-
-def should_expand(node):
-    key = (node.multiplier, node.constant, node.depth)
-    if key in SEEN:
-        return False
-    SEEN.add(key)
-    return True
-
-
 class CollatzNumbers(NodeMixin):
     parent_parity_mapping = {
         'EVEN': 'e',
@@ -31,14 +15,14 @@ class CollatzNumbers(NodeMixin):
 
     def __init__(self, parent, multiplier, constant, parent_parity, index_map=(1,0), word=''):
         super(CollatzNumbers, self).__init__()
-        self.parent = parent    # for depth tracking done by anytree
+        self.parent = parent    # for ancestor+depth tracking done by anytree
         self.multiplier = multiplier
         self.constant = constant
         self.parent_parity = parent_parity
         self.index_map = index_map
         self.word = word
+        self.cycle_detected, self.terminate_branch = self._register_and_check_cycle()
         self.name = self.__str__()
-        self._register_and_check()
 
     def __str__(self):
         # self string used in anytree rendering
@@ -48,12 +32,6 @@ class CollatzNumbers(NodeMixin):
         if even:
             return (a//2, b//2)
         else:
-
-            # >>> DEBUG: force a self-loop on S(6,1)
-            if DEBUG_SELF_LOOP and a == SELF_A and b == SELF_B:
-                return (a, b)   # immediate duplicate
-            # >>> END DEBUG
-
             # ai + b -> 3(ai + b) + 1 = (3a)i + (3b + 1)
             new_a = 3*a
             new_b = 3*b + 1
@@ -63,33 +41,47 @@ class CollatzNumbers(NodeMixin):
             # so we might as well do the next step at once
             return self._get_child_ab(a=new_a, b=new_b, even=True)
 
-    def _register_and_check(self):
-        """Attempth to find a cycle in the Collatz tree.
+    def _register_and_check_cycle(self):
+        """ Attempth to find a cycle in the Collatz tree.
 
-        alpha, beta here represent the index map coefficients.
+        Let current node be S(a_1,b_1) with index map alpha_1, beta_1 and depth d_1.
+        Search in ancestors for a node S(a_2,b_2) with index map alpha_2, beta_2 and depth d_2
+        such that:
 
-        NOTE: This method is flawed. Working on a real cycle detection algorithm
+        Case 1: b_1 = b_2 := b and beta_1 = beta_2 := beta
+            - (we can then set node index = 0 which results in same node value b and same seed value beta -> cycle)
+
+        Case 2: ...
         """
-        key = (self.multiplier, self.constant)
-        if key not in FIRST:
-            FIRST[key] = (self.depth, *self.index_map, self)
-            return  True
-        # second hit -> potential cycle
-        k  = self.depth
-        k0, alpha0, beta0, node0 = FIRST[key]
-        alpha1, beta1 = self.index_map
-        #  CRT test
-        from math import gcd
-        mod = 2**k
-        if (beta1 - beta0) % gcd(mod, mod) == 0 and (beta1 - self.constant) % gcd(mod, self.multiplier) == 0:
-            print("** REAL CYCLE CANDIDATE **", f"depth {k}, {str(self).replace('\n', ' ')}")
-        return False
+        a_1 = self.multiplier
+        b_1 = self.constant
+        alpha_1 = self.index_map[0]
+        beta_1 = self.index_map[1]
+
+        cycle_detected, terminate_branch = False, False
+
+        if a_1 == 1 and b_1 == 0:
+            # root node, trivial cycle
+            cycle_detected = True
+            terminate_branch = True
+            return cycle_detected, terminate_branch
+
+        # check case 1
+        for ancestor in self.ancestors:
+            b_2 = ancestor.constant
+            beta_2 = ancestor.index_map[1]
+            if b_1 == b_2 and beta_1 == beta_2:
+                cycle_detected = True
+                if b_1 == 1 or b_1 == 2:    # node value 1 or 2 is a collatz end cycle
+                    # print("End cycle detected: ", str(ancestor).replace("\n", " "), " -> ", str(self).replace("\n", " "))
+                    # terminate_branch = True
+                    return cycle_detected, terminate_branch
+                print("!! Cycle detected: ", str(ancestor).replace("\n", " "), " -> ", str(self).replace("\n", " "))
+                return cycle_detected, terminate_branch
+
+        return cycle_detected, terminate_branch
 
     def generate_children(self):
-        if self.multiplier == 1 and self.constant == 0 and self.depth>0:
-            return  # to not expand the root node further
-        if not should_expand(self):
-            return
         if self.children:
             return self.children
 
@@ -100,9 +92,11 @@ class CollatzNumbers(NodeMixin):
         transform = False
 
         if multiplier_even and constant_even:
+            print("This never happens")
             child_even_ab = self._get_child_ab(a=self.multiplier, b=self.constant, even=True)
             child_odd_ab = None
         elif multiplier_even and (not constant_even):
+            print("This never happens")
             child_even_ab = None
             child_odd_ab = self._get_child_ab(a=self.multiplier, b=self.constant, even=False)
         elif (not multiplier_even) and constant_even:
@@ -134,18 +128,26 @@ class CollatzNumbers(NodeMixin):
                              self.index_map[0]*self.index_transforms[child_even_index_transform][1] + self.index_map[1])
                 child_word = self.word + child_even_index_transform
             else:
+                print("This never happens")
                 index_map = self.index_map  # use parents map (no transformation)
                 child_word = self.word
             child_even = CollatzNumbers(self, child_even_ab[0], child_even_ab[1], self.parent_parity_mapping['EVEN'], index_map, child_word)
-            babies.append(child_even)
+
+            if not child_even.terminate_branch:
+                babies.append(child_even)
+
         if child_odd_ab:
             if child_odd_index_transform:
                 index_map = (self.index_map[0]*self.index_transforms[child_odd_index_transform][0],
                              self.index_map[0]*self.index_transforms[child_odd_index_transform][1] + self.index_map[1])
                 child_word = self.word + child_odd_index_transform
             else:
+                print("This never happens")
                 index_map = self.index_map  # use parents map (no transformation)
                 clild_word = self.word
             child_odd = CollatzNumbers(self, child_odd_ab[0], child_odd_ab[1], self.parent_parity_mapping['ODD'], index_map, child_word)
-            babies.append(child_odd)
+
+            if not child_odd.terminate_branch:
+                babies.append(child_odd)
+
         self.children = babies
