@@ -115,7 +115,7 @@ class CollatzNumbers(NodeMixin):
         terminate_branch = False
 
         if a_1 == 1 and b_1 == 0:
-            # root node, trivial cycle
+            # seed = 0 branch
             cycle_detected = True
             terminate_branch = True
             return cycle_detected, terminate_branch

@@ -1,13 +1,15 @@
 \documentclass{article}
 \usepackage{float}
-\usepackage{graphicx}
+\usepackage{graphicx} % Required for inserting images
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{mathtools, bm}
 \usepackage{amsthm}
 \usepackage{url}
 
+% Choose a body style first (upright, say)
 \theoremstyle{definition}
 
+% ONE counter per type, all reset at each \section
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}{Lemma}[section]
 \newtheorem{proposition}{Proposition}[section]
@@ -30,7 +32,7 @@ calculus \emph{(i)} splits \emph{any} progression into its even and odd
 subsequences in a single step; \emph{(ii)} gives a closed formula for every set
 of seeds that realises a prescribed parity word; \emph{(iii)} yields a
 one–line affine invariant that forbids trajectories consisting of infinitely
-many “odd“ moves; and \emph{(iv)} reduces the non-trivial-cycle problem to a pair of linear congruences.
+many “odd“ moves; and \emph{(iiii)} reduces the non-trivial-cycle problem to a pair of linear congruences.
 \end{abstract}
 
 \section*{Related Work}\label{sec:related}
@@ -134,7 +136,7 @@ Example~\ref{example:ex1} demonstrates how we can track both the index and the p
 
 \section{First results}
 With the divisibility results from above we can now show why the $T_1, T_2$ transformations are interesting:
-\begin{proposition}\label{proposition:prop1}
+\begin{proposition}\label{proposition:paritysplit}
 Parity splittig
 \begin{enumerate}
     \item When $a,b$ odd then
@@ -190,7 +192,7 @@ The compact Collatz step
 \end{definition}
 
 \section{Collatz possibility graph}
-Let's start a Collatz sequence without making any assumptions on the seed $n_0$, and build up a graph of possible paths. Making no assumptions on $n_0$ we let $n_0=s_i\in S(1,0)$ be any number (note that $n_0$ is just the sequence index $i$). To perform a Collatz step on $n_0$, we can without loss of generality first do an even and odd sub-sequence extraction: using Proposition~\ref{proposition:prop1}, $S(1,0)$ will branch of into the even sub-sequence $S(2,0)$ and the odd sub-sequence $S(2,1)$.
+Let's start a Collatz sequence without making any assumptions on the seed $n_0$, and build up a graph of possible paths. Making no assumptions on $n_0$ we let $n_0=s_i\in S(1,0)$ be any number (note that $n_0$ is just the sequence index $i$). To perform a Collatz step on $n_0$, we can without loss of generality first do an even and odd sub-sequence extraction: using Proposition~\ref{proposition:paritysplit}, $S(1,0)$ will branch of into the even sub-sequence $S(2,0)$ and the odd sub-sequence $S(2,1)$.
 \begin{enumerate}
     \item
     Even sub-sequence
@@ -209,10 +211,12 @@ Let's start a Collatz sequence without making any assumptions on the seed $n_0$,
 \end{enumerate}
 %
 In the Collatz steps we have simply plugged in $n_i=ai+b$ into Equation~\ref{eq:eq1}.
-%
-\\[.4cm]
-%
-\textsc{Remark 1:} Without loss of generality we have here constructed the \textit{form} that all possible numbers $n_1 = f_{col}(n_0)$ can take on. Using Proposition~\ref{proposition:prop1} we can keep applying this method to the child nodes, and without loss of generality we can construct the \textit{structure} $S(a,b)$ of all nodes in all possible paths of Equation~\ref{eq:eq1}.
+\begin{proposition}\label{proposition:alwaystransforms} When keep applying the compact Collatz function on an initial arithmetic sequence $S(a,b)$, there will always be a $T_1$ and $T_2$ transformation between each step to produce the even and odd sub-sequences.
+\\
+\textsc{Proof:} blabla
+\end{proposition}
+
+\textsc{Remark 1:} Without loss of generality we have here constructed the \textit{form} that all possible numbers $n_1 = f_{col}(n_0)$ can take on. Using Proposition~\ref{proposition:paritysplit} we can keep applying this method to the child nodes, and without loss of generality we can construct the \textit{structure} $S(a,b)$ of all nodes in all possible paths of Equation~\ref{eq:eq1}.
 %
 \\[.4cm]
 %
@@ -283,7 +287,7 @@ Running the first few steps on a computer we can produce some visualizations. He
 Link to the python code used to generate the tree object and visualizations is referenced \cite{Angermund2025}
 %
 \begin{example}\label{example:ex2}
-Let's look at Figure~\ref{fig:fig2} and trace the lineage of $i=n_0$ down to the lower left most node $S(9,5)$. Remember that we have only done a sub-sequence extraction when both $a,b$ are odd or $a$ odd and $b$ even in accordance to Proposition~\ref{proposition:prop1}:
+Let's look at Figure~\ref{fig:fig2} and trace the lineage of $i=n_0$ down to the lower left most node $S(9,5)$. Remember that we have only done a sub-sequence extraction when both $a,b$ are odd or $a$ odd and $b$ even in accordance to Proposition~\ref{proposition:paritysplit}:
 The first transformation is the odd sub-sequence step from $S(1,0)$ which transforms the index as $T_2$, then the even sub-sequence from $S(3,2)$ which transforms the index as $T_1$, and so on. Resulting in the transformation sequence $T_2T_1T_1T_1T_2(i)$. I.e. $i \longrightarrow 2(2\cdot2\cdot2\cdot(2j+1))+1 = 2(16j+8)+1 = 32j+17$, where $j$ is the index of the target node $S(9,5)$.
 So, by choosing a $j$, we will select both the node value and the seed value. Let's pick $j=5 \implies s_5\in S(9,5) = 50$ and $n_0 = i = 32j+17 = 177$. We verify this by running the Collatz algorithm with seed 177 and checking that the 5th compact (7th regular) step is 50. The resulting values are 177, 266, 133, 200, 100, 50.
 \end{example}
@@ -301,7 +305,7 @@ There is no finite seed $n_0$ such that Equation~\ref{eq:eq1} will repeat the od
 \begin{equation*}
     n_{k+1} = \frac{3n_k + 1}{2}.
 \end{equation*}
-This is the right most path in Figure~\ref{fig:fig2}, and by a glance it looks like $n_k$ always has an odd $a$ and even $b$, in fact the pattern seems to be that $a$ is odd and $b=a-1$. If we can show that this is always the case then, according to Proposition~\ref{proposition:prop1}, we are always doing $T_2$ index transformations. Let's prove this as a lemma:
+This is the right most path in Figure~\ref{fig:fig2}, and by a glance it looks like $n_k$ always has an odd $a$ and even $b$, in fact the pattern seems to be that $a$ is odd and $b=a-1$. If we can show that this is always the case then, according to Proposition~\ref{proposition:paritysplit}, we are always doing $T_2$ index transformations. Let's prove this as a lemma:
 %
 \begin{lemma}
 We want to show that for $n_k = ai+b$, where $a$ odd and $b=a-1$, after a $T_2$ transformation and the odd step in Equation~\ref{eq:eq1} we will end up with $n_{k+1}=a'j+b'$ where $a'$ is odd and $b'=a'-1$. Let's do the full induction proof.
@@ -332,7 +336,7 @@ Now $a'=6\lambda+3$ and $b'=6\lambda+2$, which gives the resulting sequence $S(a
 \begin{flushright}
 $\Box$
 \end{flushright}
-Now, importantly, we know that we are always doing $T_2$ index transformations before each Collatz step. So after $k$ successive steps we will land at a node with sequence index $j$, and by~\ref{proposition:prop2} we can retrieve the seed as $s_i\in S(1,0) = i = 2^kj + 2^k -1$. Even if we choose $j=0$, the starting seed will clearly be unbounded when we let $k\longrightarrow\infty$. Thus there is no finite seed $n_0$ such that the compact odd Collatz-step can be applied indefinitely.
+Now, importantly, we know that we are always doing $T_2$ index transformations before each Collatz step. So after $k$ successive steps we will land at a node with sequence index $j$, and by Proposition~\ref{proposition:prop2} we can retrieve the seed as $s_i\in S(1,0) = i = 2^kj + 2^k -1$. Even if we choose $j=0$, the starting seed will clearly be unbounded when we let $k\longrightarrow\infty$. Thus there is no finite seed $n_0$ such that the compact odd Collatz-step can be applied indefinitely.
 \begin{flushright}
 $\Box$
 \end{flushright}
@@ -369,6 +373,74 @@ Notice that if $b_1=b_2$ and $\beta_1=\beta_2$ we get $x=y=0$. We can actually s
 \end{figure}
 %
 Rudimentary code to find cycles is referenced \cite{Angermund2025}. Whether this framework can be useful in contrast to methods such as the m-cycle matrix technique\cite{SimonsDeWeger2005} is unclear to us at this stage.
+
+\section{$T_1$ paths}
+\begin{theorem}\label{thm:t1paths}
+Given some node $S(a_0,b_0)$ in the Collatz tree with index map $i=\alpha j+\beta$, if we follow the path forward that only applies $T_1$ transformations we will eventually reach a node $S(a_n, 1)$.
+%
+\\[.2cm]
+%
+\textsc{Proof:} We know from Proposition~\ref{proposition:alwaystransforms} that $a_0$ is odd. So we have two cases to consider: $b_0$ even and $b_0$ odd. For the case when $b_0$ is even the $T_1$ transformation produces the even sub-sequence $S(2a_0,b_0)$ according to Proposition~\ref{proposition:paritysplit}. The even Collatz step will then produce the next node $S(a_0,b_0/2)$. Note that if $b_0=2^{n-1}$ then we can apply this step $n$ times and get $b_n=1$. But for the general case let's assume that $b_0=2^{m_0}b_0'$ and run the $T_1 \longrightarrow$ even-sub-sequence $\longrightarrow$ even-Collatz-step $m_0$ times until we reach a node with the arithmetic sequence $S(a_0,b_0')$ and $b_0'$ is odd.
+
+Note that if we set $m_0=0$ we cover the case when $b_0$ is odd but still get the same result: A new node with sequence $S(a_0,b_0')$ where $b_0'=b_0$.
+%
+\\[.4cm]
+%
+Moving on. With $b_0'$ odd we get the \textit{odd} subsequence $S(2a_0,b_0')$ from $T_1$ and to get the next node's arithmetic sequence we apply the compact odd Collatz step:
+\begin{equation*}
+    \frac{3(2a_0j+b_0')+1}{2} = 3a_0j + \frac{3b_0'+1}{2} =: a_1j + b_1
+\end{equation*}
+We are back in the situation we started in: We can assume $b_1=2^{m_2}b_1'$, get to a new node $S(a_1, b_1')$ and do the odd step again.
+%
+\\[.4cm]
+%
+Now, we don't care about the progression of $a_0$ but we can note that it's multiplied by 3 in every odd step so it will never decrease. We do however care about the progression of $b_0$. So let's formulate it. The first steps are:
+\begin{equation*}
+    b_0' = \frac{b_0}{2^{m_0}}, \quad b_1 = \frac{3b_0' + 1}{2} \implies b_1 = \frac{3\frac{b_0}{2^{m_0}} + 1}{2} = \frac{3^1b_0 + 3^02^{m_0}}{2^{m_0+1}}
+\end{equation*}
+Another step gives
+\begin{equation*}
+    b_1' = \frac{b_1}{2^{m_1}} = \frac{3b_0 + 2^{m_0}}{2^{m_0+m_1+1}}, \quad b_2 = \frac{3b_1' + 1}{2} = \frac{3^2b_0 + 3^12^{m_0} + 3^02^{m_0+m_1+1}}{2^{m_0+m_1+2}}.
+\end{equation*}
+And another step
+\begin{equation*}
+\begin{split}
+    b_2' = \frac{b_2}{2^{m_2}} & = \frac{3^2b_0 + 3^12^{m_0} + 3^02^{m_0+m_1+1}}{2^{m_0+m_1+m_2+2}}, \\
+    b_3 = \frac{3b_2'+1}{2} & = \frac{3^3b_0 + 3^22^{m_0} + 3^12^{m_0+m_1+1} + 3^02^{m_0+m_1+m_2+2}}{2^{m_0+m_1+m_2+3}}.
+\end{split}
+\end{equation*}
+And after $n$ steps
+\begin{equation*}
+\begin{split}
+    b_n & = \\
+    & \frac{3^nb_0 + 3^{n-1}2^{m_0} + 3^{n-2}2^{m_0+m_1+1} + 3^{n-3}2^{m_0+m_1+m_2+2}+...+3^02^{m_0+...+m_{n-1}+(n-1)}}{2^{m_0+...+m_{n-1}+n}} \\
+    & = \frac{3^nb_0+\sum_{i=1}^n3^{n-i}2^{(i-1)+\sum_{j=0}^{i-1}m_j}}{2^{n+\sum_{i=0}^{n-1}m_i}}.
+\end{split}
+\end{equation*}
+Let's make the assumption that $m_0=m_1=...=m_n:=m$. Then we get the much simpler:
+\begin{equation*}
+    b_n = \frac{3^nb_0+\sum_{i=1}^n3^{n-i}2^{i(1+m)-1}}{2^{n(1+m)}}
+\end{equation*}
+\end{theorem}
+%
+\noindent
+\textbf{Speculation}
+\\
+Analysis show that for $m=1$ $\{b_n\}_{n=0}^{N}$ converges quickly to $2$ (part of termination sequence). And for larger values of $m$ it quickly converges to some $0<\delta<1$. For $m=0$ however the series obviously diverges. So we must investigate the case for different values of $m$. We can start by letting a fraction of ${m_i}_{i=0}^n$ be zero and a fraction be 1. So if e.g. half the values of $m_i$ are 1 and half 0 we can just let $m=0.5$. For $m=0.5$ the series diverges but for $m=0.6$ it slowly converges to somewhere around $48$.
+
+
+\section{Proving the Collatz Conjecture*}\label{sec:proof}
+Given that at depth $k$ we have index map $i=2^kj+\beta$ where $i=n_0$ is the seed, and that the starting seed is finite; there is a $k$ such that $2^k>n_0$ and thus $i=2^k\cdot0+\beta=\beta$ is the only possible index mapping. Let's call this the "critical depth" $k_c$. When we keep applying the Collatz step after this point we will only be performing $T_1$ transformations since the $T_2$ transformation forces an increase in seed value. Let's state this as a corollary:
+\begin{corollary}\label{cor:criticaldepth}
+For any finite seed $n_0$ there exists a critical depth $k_c$ in the Collatz tree such that for steps with $k>k_c$ we are only performing $T_1$ transformations.
+\end{corollary}
+%
+\begin{theorem}\label{thm:collatz} There is no finite seed $n_0$ such that the Collatz function can be applied indefinitely and not converge to 1. \textbf{with the contingency that Theorem~\ref{thm:t1paths} is true.}
+%
+\\[.2cm]
+%
+\textsc{Proof:} Assume that there exists a finite seed $n_0$ such that the Collatz sequence never reaches 1. We know from corollary \ref{cor:criticaldepth} that we will reach a point where $k\geq k_c$ which forces $j=0$ in the index mapping $i=2^kj+\beta \implies n_0=i=\beta$ and every subsequent step includes a $T_1$ transform. Furthermore this forces the node value $s_j\in (aj+b)_{j\in\mathbb{N}} = b$. But as we saw in Theorem~\ref{thm:t1paths} the constant part of the arithmetic sequence always approaches 1 when $T_1$ transformations are applied indefinitely. We therefore conclude that no such $n_0$ can exist.
+\end{theorem}
 
 \section{Conclusion and Outlook}\label{sec:conclusion}
 
