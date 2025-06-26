@@ -8,7 +8,7 @@ from collatz import CollatzNumbers
 
 def print_to_terminal(root):
     for pre, fill, node in RenderTree(root):
-        treestr = u"%s%s" % (pre, node.name)
+        treestr = u"%s%s" % (pre, str(node))
         print(treestr.ljust(8))
 
 
@@ -29,7 +29,7 @@ def run(graph_depth, root):
 
 
 if __name__ == "__main__":
-    graph_depth = 9    # Do not use big values (> 7) when generating visualizations for the entire Collatz tree
+    graph_depth = 7    # Do not use big values (> 7) when generating visualizations for the entire Collatz tree
     root_sequence = (1, 0)
     root_parent = None
     root = CollatzNumbers(root_parent, root_sequence[0], root_sequence[1], 'ROOT')

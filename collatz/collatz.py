@@ -8,8 +8,8 @@ def check_loop_case_1(b_1, beta_1, ancestor):
     beta_2 = ancestor.index_map[1]
     if b_1 == b_2 and beta_1 == beta_2:
         if b_1 == 1 or b_1 == 2:    # node value 1 or 2 is a collatz end cycle
-            # print("End cycle detected at ", str(ancestor).replace("\n", " "))
-            return False    # we don't care about end cycles
+            print("End cycle detected at ", str(ancestor).replace("\n", " "))
+            return True
         print("!! Cycle detected at ", str(ancestor).replace("\n", " "))
         return True
     return False
@@ -59,7 +59,7 @@ class CollatzNumbers(NodeMixin):
         'T2': (2, 1)
     }
 
-    def __init__(self, parent, multiplier, constant, parent_parity, index_map=(1,0), word=''):
+    def __init__(self, parent, multiplier, constant, parent_parity, index_map=(1,0), word='', terminate_loops=True):
         super(CollatzNumbers, self).__init__()
         self.parent = parent    # for ancestor+depth tracking done by anytree
         self.multiplier = multiplier
@@ -67,8 +67,11 @@ class CollatzNumbers(NodeMixin):
         self.parent_parity = parent_parity
         self.index_map = index_map
         self.word = word
-        self.cycle_detected, self.terminate_branch = self._check_cycle()
         self.name = self.__str__()
+        if terminate_loops:
+            self.cycle_detected = self._check_cycle()
+        else:
+            self.cycle_detected = False
 
     def __str__(self):
         # self string used in anytree rendering
@@ -111,18 +114,8 @@ class CollatzNumbers(NodeMixin):
         """
         a_1 = self.multiplier
         b_1 = self.constant
-
-        terminate_branch = False
-
-        if a_1 == 1 and b_1 == 0:
-            # seed = 0 branch
-            cycle_detected = True
-            terminate_branch = True
-            return cycle_detected, terminate_branch
-
         alpha_1 = self.index_map[0]
         beta_1 = self.index_map[1]
-
 
         for ancestor in self.ancestors:
             # Run special case
@@ -131,14 +124,17 @@ class CollatzNumbers(NodeMixin):
             cycle_detected = check_loop_case_2(a_1, b_1, alpha_1, beta_1, ancestor)
             if cycle_detected:
                 print("!! Cycle detected: ", str(ancestor).replace("\n", " "), " -> ", str(self).replace("\n", " "))
-                terminate_branch = True
-                return cycle_detected, terminate_branch
+                return cycle_detected
 
-        return cycle_detected, terminate_branch
+        return False
 
     def generate_children(self):
         if self.children:
-            return self.children
+            return
+        if self.multiplier == 1 and self.constant == 0 and self.parent is not None:
+            # seed = 0 branch, always remove
+            self.children = []
+            return
 
         multiplier_even = self.multiplier % 2 == 0
         constant_even = self.constant % 2 == 0
@@ -188,7 +184,7 @@ class CollatzNumbers(NodeMixin):
                 child_word = self.word
             child_even = CollatzNumbers(self, child_even_ab[0], child_even_ab[1], self.parent_parity_mapping['EVEN'], index_map, child_word)
 
-            if not child_even.terminate_branch:
+            if not child_even.cycle_detected:
                 children.append(child_even)
 
         if child_odd_ab:
@@ -202,7 +198,7 @@ class CollatzNumbers(NodeMixin):
                 clild_word = self.word
             child_odd = CollatzNumbers(self, child_odd_ab[0], child_odd_ab[1], self.parent_parity_mapping['ODD'], index_map, child_word)
 
-            if not child_odd.terminate_branch:
+            if not child_odd.cycle_detected:
                 children.append(child_odd)
 
         self.children = children
